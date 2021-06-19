@@ -7,9 +7,9 @@ PUBLIC_KEY_BYTES = 564
 SHARED_SECRET_BYTES = 32
 CIPHERTEXT_MESSAGE_BYTES = 596
 
-file_path_compressed = "./lib751_compressed.so"
+file_path_compressed = "lib751_compressed.so"
 file_path = "./lib751.so"
-sike_api = cdll.LoadLibrary(file_path)
+sike_api = CDLL(file_path)
 
 
 def _print_bytes(a, length):
