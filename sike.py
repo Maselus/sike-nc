@@ -1,5 +1,4 @@
 from ctypes import *
-from array import array
 
 # SIKE P751
 SECRET_KEY_BYTES = 644

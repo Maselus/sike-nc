@@ -38,13 +38,13 @@ class SendMessageBase:
             raw_data = input()
             if raw_data:
                 if self.is_secure:
-                    data = padding(raw_data).encode("utf16")
+                    data = padding(raw_data).encode(ENCODING)
                     encrypted_data = aes.encrypt(data)
                     logging.debug('Sending encrypted message: \n%s\n key: %s', encrypted_data,
                                   self.key)
                     socket.send(bytes(encrypted_data))
                 else:
-                    socket.send(bytes(raw_data, 'utf-16'))
+                    socket.send(bytes(raw_data, ENCODING))
 
 
 class Server(SendMessageBase):
