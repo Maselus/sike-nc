@@ -59,7 +59,7 @@ class Server(SendMessageBase):
         logging.info('Exchanging key...')
         logging.debug('Waiting for public key response...')
         public_key = self.connection.recv(BUFFER_SIZE)
-        #logging.debug('Reviced public key: %s', public_key.hex())
+        # logging.debug('Reviced public key: %s', public_key.hex())
         logging.info('Encapsulating key...')
         shared_secret, ciphertext = sike.encapsulate(public_key)
         logging.info('Sending cypher text message...')
@@ -120,8 +120,8 @@ class Client(SendMessageBase):
         logging.info('Exchanging key...')
         logging.debug('Generating key pair...')
         public_key, secret_key = sike.generate_key()
-        #logging.debug('Generated public key: %s', public_key.hex())
-        #logging.debug('Generated secret key: %s', secret_key.hex())
+        # logging.debug('Generated public key: %s', public_key.hex())
+        # logging.debug('Generated secret key: %s', secret_key.hex())
 
         logging.debug('Sending public key...')
         self.socket.send(public_key)
@@ -174,7 +174,6 @@ def main():
     parser.add_argument("--log", type=str, default='INFO')
     parser.add_argument("destination", nargs='?')
     parser.add_argument("port", nargs='?', type=int)
-
     args = parser.parse_args()
 
     log_level = getattr(logging, args.log.upper(), None)
