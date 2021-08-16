@@ -59,7 +59,7 @@ class Server(SendMessageBase):
         logging.info('Exchanging key...')
         logging.debug('Waiting for public key response...')
         public_key = self.connection.recv(BUFFER_SIZE)
-        # logging.debug('Reviced public key: %s', public_key.hex())
+        logging.debug('Reviced public key: %s', public_key.hex())
         logging.info('Encapsulating key...')
         shared_secret, ciphertext = sike.encapsulate(public_key)
         logging.info('Sending cypher text message...')
@@ -120,8 +120,8 @@ class Client(SendMessageBase):
         logging.info('Exchanging key...')
         logging.debug('Generating key pair...')
         public_key, secret_key = sike.generate_key()
-        # logging.debug('Generated public key: %s', public_key.hex())
-        # logging.debug('Generated secret key: %s', secret_key.hex())
+        logging.debug('Generated public key: %s', public_key.hex())
+        logging.debug('Generated secret key: %s', secret_key.hex())
 
         logging.debug('Sending public key...')
         self.socket.send(public_key)
@@ -169,7 +169,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--listen", help="Listen mode, for inbound connects",
                         action='store_true')
-    parser.add_argument("-p", "--server-port", required=False, type=int)
+    parser.add_argument("-p", "--server-port", default=23456, type=int)
     parser.add_argument("-ns", "--not-secure", action='store_true')
     parser.add_argument("--log", type=str, default='INFO')
     parser.add_argument("destination", nargs='?')
