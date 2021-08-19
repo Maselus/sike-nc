@@ -51,7 +51,7 @@ class SendMessageBase:
 class Server(SendMessageBase):
     def __init__(self, socket_family=socket.AF_INET, socket_type=socket.SOCK_STREAM, secure=True):
         self.socket = socket.socket(socket_family, socket_type)
-        #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connection = None
         self.key = 'Sixteen byte key'
         self.is_secure = secure
