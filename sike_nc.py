@@ -75,7 +75,7 @@ class Server(SendMessageBase):
         return shared_secret
 
     def start(self, port):
-        self.socket.bind(('localhost', port))
+        self.socket.bind(('', port))
         logging.info('Listening on port %d...', port)
         self.socket.listen()
         try:
