@@ -16,4 +16,3 @@ RUN pip install -r requirements.txt
 COPY . /code/
 
 RUN chown -R www-data:www-data /code
-CMD ['python']
