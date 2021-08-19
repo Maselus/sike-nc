@@ -1,6 +1,7 @@
 import argparse
 import logging
 import socket
+import sys
 import threading
 import sike
 
@@ -80,7 +81,9 @@ class Server(SendMessageBase):
         try:
             self.connection, addr = self.socket.accept()
         except KeyboardInterrupt:
-            raise
+            self.socket.close()
+            print('Connection closed.')
+            sys.exit(1)
 
         with self.connection:
             logging.info('Connected by %s', addr[0])
@@ -104,7 +107,7 @@ class Server(SendMessageBase):
                     if not raw_data:
                         break
             except KeyboardInterrupt:
-                raise
+                pass
         self.socket.close()
         print('Connection closed.')
 
@@ -159,7 +162,7 @@ class Client(SendMessageBase):
                 else:
                     _print(raw_data)
         except KeyboardInterrupt:
-            raise
+            pass
 
         self.socket.close()
         print('Connection closed.')
@@ -189,7 +192,6 @@ def main():
         except (Exception, KeyboardInterrupt) as e:
             server.socket.close()
             print('Connection closed.')
-            raise
     elif args.destination and args.port:
         client = Client(secure=secure)
         try:
@@ -197,7 +199,6 @@ def main():
         except (Exception, KeyboardInterrupt) as e:
             client.socket.close()
             print('Connection closed.')
-            raise
     else:
         raise Exception()
 
