@@ -10,7 +10,7 @@ gcc -fPIC -std=gnu11 -D _X86_ -D __NIX__ -D _GENERIC_ -shared  -o lib751.so P751
 ## usage
 The first person must run program as server:
 
-python3 sike_nc.py -l -p <port>
+python3 sike_nc.py -l -p <server_port>
 
 And second person connect as a client with:
 
