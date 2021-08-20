@@ -20,7 +20,7 @@ To see more details about key exchange user --log DEBUG
 To disable key exchange and massage encryption use --no-secure flag
 
 ## docker
-####build image
+#### build image
 `docker build -t sike_nc_image .`
 #### run on linux
 server: 
