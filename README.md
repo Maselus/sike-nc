@@ -23,12 +23,10 @@ To disable key exchange and massage encryption use --no-secure flag
 ####build image
 `docker build -t sike_nc_image .`
 #### run on linux
-server:
-
+server: 
 `docker run -it --network=host --expose <server_port> sike_nc_image bash`
 
-client:
-
+client: 
 `docker run -it --network=host sike_nc_image bash`
 
 #### run on Windows/MacOS
@@ -38,10 +36,9 @@ For running both containers that will enable to communicate with each other on W
 
 and then run containers with commands:
 
-server:
+server: 
 `docker run -it  --expose <server_port> --network=sike_nc_network --name sike_nc_server sike_nc_image bash`
 
-client:
-
+client: 
 `docker run -it --network=sike_nc_network  --name sike_nc_client sike_nc_image bash`
 
