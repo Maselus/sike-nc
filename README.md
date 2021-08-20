@@ -16,8 +16,8 @@ And second person connect as a client with:
 
 `python3 sike_nc.py <IPv4 addres> <server_port>`
 
-To see more details about key exchange user --log DEBUG
-To disable key exchange and massage encryption use --no-secure flag
+To see more details about key exchange user `--log DEBUG`
+To disable key exchange and massage encryption use `--no-secure` flag
 
 ## docker
 #### build image
