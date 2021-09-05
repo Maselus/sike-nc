@@ -49,12 +49,18 @@ class SendMessageBase:
 
 
 class Server(SendMessageBase):
-    def __init__(self, socket_family=socket.AF_INET, socket_type=socket.SOCK_STREAM, secure=True):
+    def __init__(self,
+                 socket_family=socket.AF_INET,
+                 socket_type=socket.SOCK_STREAM,
+                 secure=True,
+                 sike_lib_path=sike.DEFAULT_SIKE_LIB_PATH
+                 ):
         self.socket = socket.socket(socket_family, socket_type)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connection = None
         self.key = 'Sixteen byte key'
         self.is_secure = secure
+        self.sike_api = sike.CtypeSikeApi(sike_lib_path)
 
     def key_exchange(self):
         logging.info('Exchanging key...')
@@ -62,7 +68,7 @@ class Server(SendMessageBase):
         public_key = self.connection.recv(BUFFER_SIZE)
         logging.debug('Reviced public key: %s', public_key.hex())
         logging.info('Encapsulating key...')
-        shared_secret, ciphertext = sike.encapsulate(public_key)
+        shared_secret, ciphertext = self.sike_api.encapsulate(public_key)
         logging.info('Sending cypher text message...')
         self.connection.sendall(ciphertext)
         logging.info('Waiting for confirmation...')
@@ -114,15 +120,21 @@ class Server(SendMessageBase):
 
 class Client(SendMessageBase):
 
-    def __init__(self, socket_family=socket.AF_INET, socket_type=socket.SOCK_STREAM, secure=True):
+    def __init__(self,
+                 socket_family=socket.AF_INET,
+                 socket_type=socket.SOCK_STREAM,
+                 secure=True,
+                 sike_lib_path=sike.DEFAULT_SIKE_LIB_PATH
+                 ):
         self.socket = socket.socket(socket_family, socket_type)
         self.key = 'Sixteen byte key'
         self.is_secure = secure
+        self.sike_api = sike.CtypeSikeApi(sike_lib_path)
 
     def key_exchange(self):
         logging.info('Exchanging key...')
         logging.debug('Generating key pair...')
-        public_key, secret_key = sike.generate_key()
+        public_key, secret_key = self.sike_api.generate_key()
         logging.debug('Generated public key: %s', public_key.hex())
         logging.debug('Generated secret key: %s', secret_key.hex())
 
@@ -133,7 +145,7 @@ class Client(SendMessageBase):
         cyphertext_message = self.socket.recv(BUFFER_SIZE)
         logging.debug('Recived cypher text message: %s', cyphertext_message.hex())
         logging.info('Decapsulating shared key...')
-        shared_secret = sike.decapsulate(secret_key, cyphertext_message)
+        shared_secret = self.sike_api.decapsulate(secret_key, cyphertext_message)
         self.socket.send(EXCHANGE_CONFIRMATION)
         logging.info('Key exchanged.')
         logging.debug('Shared secret key is: %s', shared_secret.hex())
@@ -173,6 +185,7 @@ def main():
     parser.add_argument("-l", "--listen", help="Listen mode, for inbound connects",
                         action='store_true')
     parser.add_argument("-p", "--server-port", default=23456, type=int)
+    parser.add_argument("-L", "--library-path", default=sike.DEFAULT_SIKE_LIB_PATH, type=str)
     parser.add_argument("-ns", "--not-secure", action='store_true')
     parser.add_argument("--log", type=str, default='INFO')
     parser.add_argument("destination", nargs='?')
@@ -186,14 +199,14 @@ def main():
     secure = not args.not_secure
 
     if args.listen and args.server_port:
-        server = Server(secure=secure)
+        server = Server(secure=secure, sike_lib_path=args.library_path)
         try:
             server.start(port=args.server_port)
         except (Exception, KeyboardInterrupt) as e:
             server.socket.close()
             print('Connection closed.')
     elif args.destination and args.port:
-        client = Client(secure=secure)
+        client = Client(secure=secure, sike_lib_path=args.library_path)
         try:
             client.connect(args.destination, args.port)
         except (Exception, KeyboardInterrupt) as e:
