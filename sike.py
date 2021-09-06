@@ -1,3 +1,4 @@
+import os
 from ctypes import *
 
 # SIKE P751
@@ -20,7 +21,7 @@ def _print_bytes(a, length):
 
 class CtypeSikeApi:
     def __init__(self, lib_path=DEFAULT_SIKE_LIB_PATH):
-        self.sike_api = CDLL('./' + lib_path)
+        self.sike_api = CDLL(os.path.abspath(lib_path))
 
     def generate_key(self):
         pk = (c_ubyte * PUBLIC_KEY_BYTES)()
