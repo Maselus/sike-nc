@@ -7,32 +7,22 @@ PUBLIC_KEY_BYTES = 564
 SHARED_SECRET_BYTES = 32
 CIPHERTEXT_MESSAGE_BYTES = 596
 
-#file_path = "./lib751.so"
-#sike_api = CDLL(file_path)
-
-DEFAULT_SIKE_LIB_PATH = "lib751.so"
-
-
-def _print_bytes(a, length):
-    for i in range(0, length - 1):
-        print(a[i], end=' ')
-    print()
+SIKE_LIB_PATH = "lib751_x64_fast.so"
 
 
 class CtypeSikeApi:
-    def __init__(self, lib_path=DEFAULT_SIKE_LIB_PATH):
-        self.sike_api = CDLL(os.path.abspath(lib_path))
+    def __init__(self):
+        self.sike_api = CDLL(os.path.abspath(SIKE_LIB_PATH))
 
     def generate_key(self):
         pk = (c_ubyte * PUBLIC_KEY_BYTES)()
         sk = (c_ubyte * SECRET_KEY_BYTES)()
-        self.sike_api.crypto_kem_keypair_SIKEp751(byref(pk), byref(sk))
+        self.sike_api.crypto_kem_keypair(byref(pk), byref(sk))
 
         public_key_bytes = string_at(pk, PUBLIC_KEY_BYTES)
         secret_key_bytes = string_at(sk, SECRET_KEY_BYTES)
 
         return public_key_bytes, secret_key_bytes
-
 
     def encapsulate(self, public_key_bytes):
         pk = (c_ubyte * PUBLIC_KEY_BYTES)()
@@ -43,16 +33,12 @@ class CtypeSikeApi:
         ss = (c_ubyte * SHARED_SECRET_BYTES)()
         ct = (c_ubyte * CIPHERTEXT_MESSAGE_BYTES)()
 
-        # sike_api.crypto_kem_enc_SIKEp751.argtypes = [
-        #     POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)
-        # ]
-        self.sike_api.crypto_kem_enc_SIKEp751(byref(ct), byref(ss), byref(pk))
+        self.sike_api.crypto_kem_enc(byref(ct), byref(ss), byref(pk))
 
         shared_secret_bytes = string_at(ss, SHARED_SECRET_BYTES)
         ciphertext_message_bytes = string_at(ct, CIPHERTEXT_MESSAGE_BYTES)
 
         return shared_secret_bytes, ciphertext_message_bytes
-
 
     def decapsulate(self, secret_key_bytes, ciphertext_message_bytes):
         sk = (c_ubyte * SECRET_KEY_BYTES)()
@@ -65,10 +51,7 @@ class CtypeSikeApi:
 
         ss = (c_ubyte * SHARED_SECRET_BYTES)()
 
-        # sike_api.crypto_kem_dec_SIKEp751.argtypes = [
-        #     POINTER(c_ubyte), POINTER(c_ubyte), POINTER(c_ubyte)
-        # ]
-        self.sike_api.crypto_kem_dec_SIKEp751(byref(ss), byref(ct), byref(sk))
+        self.sike_api.crypto_kem_dec(byref(ss), byref(ct), byref(sk))
 
         shared_secret_bytes = string_at(ss, SHARED_SECRET_BYTES)
 

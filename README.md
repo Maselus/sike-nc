@@ -3,9 +3,10 @@ Simple console communicator like netcat with Supersingular Isogeny Key Encapsula
 message encryption.
 
 This program uses SIKEp751 implementation from https://github.com/microsoft/PQCrypto-SIDH
-as a dynamic library that was created with command:
+as a dynamic library. The x64_fast library was created in /Additional_Implementations/x64/SIKEp751/ directory with command:
 
-`gcc -fPIC -std=gnu11 -D _X86_ -D __NIX__ -D _GENERIC_ -shared  -o lib751.so P751/P751.c P751/generic/fp_generic.c random/random.c sha3/fips202.c`
+`gcc -fPIC -std=gnu11 -D __LINUX__ -D _OPTIMIZED_FAST_ -D _AMD64_ -shared -o lib751_x64.so P751.c AMD64/fp_x64.c AMD64/fp_x64_asm.S random/random.c sha3/fips202.c`
+
 
 ## usage
 The first person must run program as server:

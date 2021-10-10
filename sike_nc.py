@@ -52,15 +52,14 @@ class Server(SendMessageBase):
     def __init__(self,
                  socket_family=socket.AF_INET,
                  socket_type=socket.SOCK_STREAM,
-                 secure=True,
-                 sike_lib_path=sike.DEFAULT_SIKE_LIB_PATH
+                 secure=True
                  ):
         self.socket = socket.socket(socket_family, socket_type)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connection = None
         self.key = 'Sixteen byte key'
         self.is_secure = secure
-        self.sike_api = sike.CtypeSikeApi(sike_lib_path)
+        self.sike_api = sike.CtypeSikeApi()
 
     def key_exchange(self):
         logging.info('Exchanging key...')
@@ -124,12 +123,11 @@ class Client(SendMessageBase):
                  socket_family=socket.AF_INET,
                  socket_type=socket.SOCK_STREAM,
                  secure=True,
-                 sike_lib_path=sike.DEFAULT_SIKE_LIB_PATH
                  ):
         self.socket = socket.socket(socket_family, socket_type)
         self.key = 'Sixteen byte key'
         self.is_secure = secure
-        self.sike_api = sike.CtypeSikeApi(sike_lib_path)
+        self.sike_api = sike.CtypeSikeApi()
 
     def key_exchange(self):
         logging.info('Exchanging key...')
@@ -185,7 +183,6 @@ def main():
     parser.add_argument("-l", "--listen", help="Listen mode, for inbound connects",
                         action='store_true')
     parser.add_argument("-p", "--server-port", default=23456, type=int)
-    parser.add_argument("-L", "--library-path", default=sike.DEFAULT_SIKE_LIB_PATH, type=str)
     parser.add_argument("-ns", "--not-secure", action='store_true')
     parser.add_argument("--log", type=str, default='INFO')
     parser.add_argument("destination", nargs='?')
@@ -199,14 +196,14 @@ def main():
     secure = not args.not_secure
 
     if args.listen and args.server_port:
-        server = Server(secure=secure, sike_lib_path=args.library_path)
+        server = Server(secure=secure)
         try:
             server.start(port=args.server_port)
         except (Exception, KeyboardInterrupt) as e:
             server.socket.close()
             print('Connection closed.')
     elif args.destination and args.port:
-        client = Client(secure=secure, sike_lib_path=args.library_path)
+        client = Client(secure=secure)
         try:
             client.connect(args.destination, args.port)
         except (Exception, KeyboardInterrupt) as e:
